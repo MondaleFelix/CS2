@@ -9,6 +9,7 @@ def mix_words():
     for i in words_list:
         scrambled_words.insert(r.randint(0,len(words_list)), i)
 
+    scrambled_words = " ".join(scrambled_words)
     print(scrambled_words)
 
 mix_words()
