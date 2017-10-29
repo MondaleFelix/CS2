@@ -9,7 +9,8 @@ with open('/usr/share/dict/words', 'r') as f:
         for i in range(number):
             random_index = random.randint(0,len(f_contents))
             sentence.append(f_contents[random_index])
-        print(sentence)
+        return sentence
 
-
-new_sentence(4)
+number_argument = sys.argv[1]
+new_sentence(int(number_argument))
+print(sentence)
