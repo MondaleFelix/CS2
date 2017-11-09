@@ -118,6 +118,12 @@ class LinkedList(object):
 
 
     def delete(self, item):
+        current_node = self.node
+
+        while current_node != None
+
+
+
         """Delete the given item from this linked list, or raise ValueError.
         TODO: Best case running time: O(???) Why and under what conditions?
         TODO: Worst case running time: O(???) Why and under what conditions?"""
