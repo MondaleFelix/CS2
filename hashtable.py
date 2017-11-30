@@ -64,16 +64,18 @@ class HashTable(object):
     def length(self):
         # Initialize a count of key-value entries to 0
         count = 0
-
         # Increases count for every value found in linkedlist
+
+        # TODO: Loop through all buckets
+        # TODO: Count number of key-value entries in each bucket
         for bucket in self.buckets:
             count += bucket.length()
         return count
 
         """Return the number of key-value entries by traversing its buckets.
+
         TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Loop through all buckets
-        # TODO: Count number of key-value entries in each bucket
+        # 0(b) Run time is relative to the number of buckets
 
     def contains(self, key):
         """Return True if this hash table contains the given key, or False.
@@ -91,9 +93,13 @@ class HashTable(object):
         TODO: Running time: O(???) Why and under what conditions?"""
         # TODO: Find bucket where given key belongs
 
+        # Retrieves the bucket with the key in it
         bucket = self.buckets[self._bucket_index(key)]
 
-        # if self.contains(key)
+        if key, value in bucket:
+            return value
+        else:
+            print
         # # TODO: Check if key-value entry exists in bucket
 
 
@@ -120,10 +126,26 @@ class HashTable(object):
         """Delete the given key from this hash table, or raise KeyError.
         TODO: Running time: O(???) Why and under what conditions?"""
         # TODO: Find bucket where given key belongs
+        bucket = self.buckets[self._bucket_index(key)]
         # TODO: Check if key-value entry exists in bucket
+
         # TODO: If found, delete entry associated with given key
         # TODO: Otherwise, raise error to tell user delete failed
         # Hint: raise KeyError('Key not found: {}'.format(key))
+        """Delete the given key from this hash table, or raise KeyError"""
+        # Getting the bucket index
+
+        # ID
+        found = bucket.find(lambda item: item[0] == key) # Linear time
+
+        if found is not None:
+            # Then delete item from bucket
+            bucket.delete(found)
+            return
+        else:
+            raise KeyError("Key not longer exists in this hash table")
+
+
 
 
 def test_hash_table():

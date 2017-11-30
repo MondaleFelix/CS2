@@ -110,19 +110,68 @@ class LinkedList(object):
         # Current is not none
         while current is not None:
             # if current.data is equal to quality
-            if current.data == quality:
+            if quality(current.data):
                 # return current
-                return current
+                return current.data
             # Set current to the current's next pointer node
             current = current.next
 
 
     def delete(self, item):
-        current_node = self.node
 
-        while current_node != None
+        previous_node = None
+        current_node = self.head
+
+        # Checks to see if linkedlist is empty
+        if self.is_empty():
+            raise ValueError('Item not found: {}'.format(item))
+
+        # iterates through nodes and checks if item is data
+        while item is not current_node.data:
+            #
+            if current_node.next is None:
+                raise ValueError('Item not found: {}'.format(item))
+
+            previous_node = current_node
+            current_node = current_node.next
+
+        # Reassigns the pointer of the previous node to the next node
+        if current_node is not self.head and current_node is not self.tail:
+            previous_node.next = current_node.next
+
+        if current_node is self.head:
+            self.head = current_node.next
+
+        if current_node is self.tail:
+            self.tail = previous_node
+
+            if previous_node:
+                previous_node.next = None
 
 
+        # current_node = self.head
+        # previous = None
+
+        # while current_node is not None:
+
+        #     if item == current_node.data:
+        #         if self.length() == 1:
+        #             self.head = None
+        #             self.tail = None
+        #         if current_node == self.head:
+        #             self.head = current_node.next
+        #         elif current_node == self.tail:
+        #             self.tail.next = None
+        #             self.tail = previous
+        #         else:
+        #             if previous is not None:
+        #                 previous.next = current_node.next
+        #                 break
+        #         return
+
+        #     previous = current_node
+        #     current_node = current_node.next
+        # raise ValueError("cool")
 
         """Delete the given item from this linked list, or raise ValueError.
         TODO: Best case running time: O(???) Why and under what conditions?
