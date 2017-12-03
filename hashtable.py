@@ -89,29 +89,36 @@ class HashTable(object):
             return False
 
     def get(self, key):
-        """Return the value associated with the given key, or raise KeyError.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Find bucket where given key belongs
+        """Return the value associated with the given key, or raise KeyError"""
+        # Getting the bucket index
+        index = self._bucket_index(key) # Constant time
+        # Getting the specific bucket from the list of buckets
+        bucket = self.buckets[index] # Constant time
+        # Checking if item exists in the bucket
+        # Using the linked list find function.
+        # Using a anonymous function to match the item to the key
+        found = bucket.find(lambda item: item[0] == key) # Linear time
 
-        key_bucket = self._bucket_index(key)
-        bucket = self.buckets[key_bucket].find(lambda data: data[0] == key)
-        if bucket is not None:
-            return bucket[1]
-        else:
-            raise KeyError('Key not found: {}'.format(key))
-        # # TODO: Check if key-value entry exists in bucket
-
-
-        # TODO: If found, return value associated with given key
-        # TODO: Otherwise, raise error to tell user get failed
-        # Hint: raise KeyError('Key not found: {}'.format(key))
+        # If item is found in bucket
+        if found is not None:
+            # Return item value
+            return found[1]
+        raise KeyError("Key not longer exists in this hash table")
 
     def set(self, key, value):
 
-        bucket = self.buckets[self._bucket_index(key)]
+        """Insert or update the given key with its associated value"""
+        # Getting the bucket index
+        index = self._bucket_index(key) # Constant time
+        # Getting the specific bucket from the list of buckets
+        bucket = self.buckets[index] # Constant time
 
-        bucket.append((key,value))
-
+        # Using the contains function to check if a bucket contains the key
+        if self.contains(key):
+            # If it does delete it
+            self.delete(key) # Linear time
+        # Appending item to bucket
+        self.buckets[index].append((key, value))
 
         """Insert or update the given key with its associated value.
         TODO: Running time: O(???) Why and under what conditions?"""

@@ -1,175 +1,117 @@
-# from word_frequency import *
-# import random
-
-# comparison_array = []
-
-
-# def create_array(text_file):
-#     for word in text_file:
-#         if len(comparison_array) > 1:
-#             comparison_array.pop(0)
-#             comparison_array.append(word)
-#         else:
-#             comparison_array.append(word)
-#         print(comparison_array)
-
-# # def markovChain(lst):
-# #     for word in lst:
-# #         dictogram = dictionary(lst)
-# #         if word in dictogram:
-# #             word =+ 1
-# #         else:
-# #             dictogram[word] = Dictogram[word + 1]
-# #     print(dictogram)
-
-
-# def open_file(file_name):
-#     with open(file_name, "r") as f:
-#         f_contents = f.read().rstrip().split()
-#     return f_contents
-
-# words_list = open_file("fish.txt")
-
-# markovChain(words_list)
-
-from histograms import Dictogram
+from architecture import Dictogram
 import random
-from cleanup import clean_file
-from collections import deque
-import re
 
 
-def markov_chain(data):
-    """markov model for 1st order"""
-    #Dictionary that stores windows as the key in the key-value pair and then the value
-    #for each key is a dictogram
-    markov_chain = dict()
-    # Looping through the ammount of indexs in the list
-    for index in range(0, len(data) - 1):
-        # If index word of list exists in dictionary then update the current index
-        # Store a histogram of words for each window
-        if data[index] in markov_chain:
-            markov_chain[data[index]].update([data[index + 1]])
-        else:
-            markov_chain[data[index]] = Dictogram([data[index + 1]])
-    return markov_chain
+class Markov(object):
 
-def nth_order_markov_model(order, data):
-    markov_model = dict()
+    def __init__(self, word_list):
+        self.states = self.create_states(word_list)
+        self.states_lists_of_counts = self.histogram_states()
+    def joiner(word_list):
+        """TODO: What it does, what input it takes, and what it returns (if anything)."""
+        output = " ".join(word_list)
+        output += "."
+        return output
 
-    for i in range(0, len(data)-order):
-        # Creatjng the window
-        window = tuple(data[i: i+order])
-        # If windiw is already in the markov model
-        if window in markov_model:
-            # Update the value
-            markov_model[window].update([data[i+order]])
-        else:
-            # Add the value
-            markov_model[window] = Dictogram([data[i+order]])
-    return markov_model
-
-
-# Walk our model
-def generate_random_start(model):
-
-    # Generate a "valid" starting word.
-    # A valid starting word are words that start a sentene
-    if 'END' in model:
-        end_word = 'END'
-        while end_word == 'END':
-            end_word = model['END'].return_weighted_random_word()
-        return end_word
-    return random.choice(list(model.keys()))
-    pass
-
-# Getting a random word as the start of the sentence
-def get_start_token(markov):
-    # return random.choice(list(markov_model.keys()))
-    first_word = random.choice(list(markov.keys()))
-    return first_word
-
-# Generating sentence using first order markov_model
-def generate_sentence(length, markov_model):
-    # length parameter is length of the sentence
-    # Create first word
-    current_word = generate_random_start(markov_model)
-    # Save first word to sentence list
-    sentence = [current_word]
-    # Loop through the length of sentence provided
-    for i in range(0, length):
-        # Getting current dictogram and starting from the current word(first word)
-        current_dictogram = markov_model[current_word]
-        # Getting random word from dictogram starting from the place of the current word
-        random_word = current_dictogram.return_weighted_random_word()
-        # Setting current word variable to the random word
-        current_word = random_word
-        # Append the new current word until the sentence length is formed
-        sentence.append(current_word)
-    sentence[0] = sentence[0].capitalize()
-    return ' '.join(sentence) + '.'
-    return sentence
-
-# Provided by Jeff Chiu
-def generate_random_sentence_n(length, markov_model):
-    # Length denotes the max amount of chars
-    # connect to twitter API
-    current_window = get_start_token(markov_model)
-    sentence = [current_window[0]]
-    tweet = ''
-
-    valid_tweet_flag = True
-    sentence_count = 0
-    while valid_tweet_flag:
-        # We will generate random sentences until we decide we can not any more
-        current_dictogram = markov_model[current_window]
-        random_weighted_word = current_dictogram.return_weighted_random_word()
-
-        current_window_deque = deque(current_window)
-        current_window_deque.popleft()
-        current_window_deque.append(random_weighted_word)
-        current_window = tuple(current_window_deque)
-        sentence.append(current_window[0])
-        # print ('my current word inside windows: ' + str(current_window[1]))
-        # print ('my current window: ' + str(current_window))
-        if current_window[1] == 'end' or current_window[1] == '[end]':
-            sentence_string = ' '.join(sentence)
-            sentence_string = re.sub('end', '. ', sentence_string, flags=re.IGNORECASE)
-            sentence_string = sentence_string.capitalize()
-            new_tweet_len = len(sentence_string) + len(tweet)
-
-            if sentence_count == 0 and new_tweet_len < length:
-                # We should add this sentence to the tweet and move on to
-                # make another
-                tweet += sentence_string
-                sentence_string = ' '.join(sentence)
-                sentence_count += 1
-                current_window = generate_random_start(markov_model)
-                sentence = [current_window[0]]
-            elif sentence_count == 0 and new_tweet_len >= length:
-                # forget the sentence and generate a new one :P
-                current_window = generate_random_start(markov_model)
-                sentence = [current_window[0]]
-            elif sentence_count > 0 and new_tweet_len < length:
-                # More than one sentence. and length is still less max
-                # Get another new sentence
-                tweet += sentence_string
-                sentence_string = ' '.join(sentence)
-                sentence_count += 1
-                current_window = generate_random_start(markov_model)
-                sentence = [current_window[0]]
+    def dict_Histogram(dictogram):
+        """TODO: create list of counts type histogram, inputs list of words, returns histogram."""
+        tokens = []
+        types = []
+        for word in dictogram:
+            number = dictogram[word]
+            if number not in tokens:
+                tokens.append(number)
+                number_list = (number, [word])
+                types.append(number_list)
             else:
-                # Return this good good tweet
-                return tweet
+                for index in types:
+                    if number == index[0]:
+                        index[1].append(word)
+        return sorted(types)
+
+    def next_word_dict(self, word_list):
+        '''take word list, check word after word and create dictionary {word: [words after word]} '''
+        word_after_dict = {}
+        for i in range(-1, len(word_list)):
+            #
+            if i == -1:
+                word = "START"
+                word_after = word_list[i+1]
+            elif i == len(word_list)-1:
+                word = word_list[i]
+                word_after = "STOP"
+            else:
+                word = word_list[i]
+                word_after = word_list[i+1]
+            #
+            if word not in word_after_dict:
+                word_after_dict[word] = [word_after]
+            else:
+                word_after_dict[word].append(word_after)
+
+        return word_after_dict
+
+    def create_states(self, word_list):
+        '''convert list of words after word to histogram of words after word {word: {word after word: tokens}}'''
+        word_after_dict = self.next_word_dict(word_list)
+        print(word_after_dict)
+        states = {}
+        for word in word_after_dict:
+            states[word] = Dictogram(word_after_dict[word])
+        print(states)
+        return states
+
+    def histogram_states(self):
+        '''convert dictionary type of histogram to list of counts type of histogram {word: [(count, [words after word])]}'''
+        states_lists_of_counts = {}
+        for word in self.states:
+            states_lists_of_counts[word] = self.dict_Histogram(self.states[word])
+        print(states_lists_of_counts)
+        return states_lists_of_counts
+
+    def calculate_probabilities_dict(self):
+        '''calculate probability of each word in each histogram'''
+        probabilities_dict = {}
+        for word in self.states_lists_of_counts:
+            probabilities_dict[word] = sample.probability(self.states[word].tokens, self.states_lists_of_counts[word])
+        return probabilities_dict
+
+    def next_word_in(self, word):
+        '''pick one word that is after input word based on probabilities'''
+        probabilities_dict = self.dict_probability()
+        if word in probabilities_dict:
+            probabilities = probabilities_dict[word]
+            random_number = random.random()
+            for i in range(0, len(probabilities)):
+                if random_number < probabilities[i]:
+                    random_number = random.randint(0, len(self.states_lists_of_counts[word][i][1]) - 1)
+                    picked_word = self.states_lists_of_counts[word][i][1][random_number]
+                    return picked_word
+                else:
+                    pass
+
+    def list_words(self, number_of_words):
+        '''pick number_of_words words and return list of words, initial word is 'START' and stop picking words when picking 'STOP' '''
+        picked_words = []
+        word = "START"
+        for _ in range(0, number_of_words):
+            picked_word = self.next_word_in(word)
+            if picked_word == "STOP":
+                break
+            else:
+                picked_words.append(picked_word)
+                word = picked_word
+        return picked_words
 
 
-if __name__ == '__main__':
-    clean_text_list = clean_file('corpus.txt')
-    # print(clean_text_list)
-    # print(markov_chain(clean_text_list))
-    # markov_chain = markov_chain(clean_text_list)
-    # # higher_order_markov_chain = nth_order_markov_model(2, clean_text_list)
-    # print(markov_chain)
-    # sentence = generate_sentence(10, markov_chain)
-    # # sentence = generate_sentence_with_higher_order(10, higher_order_markov_chain)
-    # print(sentence)
+def main():
+    fish_text = 'one fish two fish red fish blue fish'
+    word_list = fish_text.split()
+    markov = Markov(word_list)
+    picked_words = markov.list_words(10)
+    made_output = output.joiner(picked_words)
+    print(made_output)
+
+
+if __name__ == "__main__":
+    main()
