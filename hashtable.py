@@ -93,13 +93,12 @@ class HashTable(object):
         TODO: Running time: O(???) Why and under what conditions?"""
         # TODO: Find bucket where given key belongs
 
-        # Retrieves the bucket with the key in it
-        bucket = self.buckets[self._bucket_index(key)]
-
-        if key, value in bucket:
-            return value
+        key_bucket = self._bucket_index(key)
+        bucket = self.buckets[key_bucket].find(lambda data: data[0] == key)
+        if bucket is not None:
+            return bucket[1]
         else:
-            print
+            raise KeyError('Key not found: {}'.format(key))
         # # TODO: Check if key-value entry exists in bucket
 
 
